@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-bg: #1a365d;
+  --color-panel: rgba(255, 255, 255, 0.05);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-accent: #3b82f6;
+  --color-text-main: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+}
+
+@layer base {
+  body {
+    @apply bg-[#0f172a] text-text-main font-sans antialiased min-h-screen;
+    background: linear-gradient(to bottom, #1e293b, #0f172a);
+  }
+}
+
+@layer components {
+  .geo-card {
+    @apply bg-panel backdrop-blur-md border border-border p-6 flex flex-col transition-all rounded-2xl;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .geo-card:hover {
+    @apply border-white/20;
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  }
+  
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .card-title-geo {
+    @apply text-[11px] uppercase tracking-[0.1em] font-bold text-text-muted mb-5;
+  }
+  
+  .stat-value-geo {
+    @apply text-3xl font-extrabold text-white leading-tight;
+  }
+
+  .btn-primary-geo {
+    @apply bg-accent text-white px-5 py-2.5 rounded-md text-[12px] font-bold uppercase tracking-wide transition-all active:scale-95 disabled:opacity-50 cursor-pointer hover:bg-blue-600;
+  }
+  
+  .btn-secondary-geo {
+    @apply bg-white/10 border border-border text-white px-5 py-2.5 rounded-md text-[12px] font-bold uppercase tracking-wide transition-all active:scale-95 cursor-pointer hover:bg-white/20;
+  }
+
+  .nav-pill {
+    @apply flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white transition-all text-[13px] font-medium;
+  }
+
+  .nav-pill-active {
+    @apply bg-white/20 text-white border-white/40;
+  }
+
+  .tag-geo {
+    @apply px-2 py-0.5 rounded text-[10px] font-bold uppercase;
+  }
+  
+  .tag-low-geo {
+    @apply bg-amber-500/20 text-amber-400;
+  }
+
+  .tag-critical-geo {
+    @apply bg-rose-500/20 text-rose-400 border border-rose-500/30 animate-pulse;
+  }
+  
+  .tag-ok-geo {
+    @apply bg-emerald-500/20 text-emerald-400;
+  }
+}
+

@@ -1,0 +1,149 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // DEFAULT DENY
+    // ===============================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ===============================================================
+    // HELPER FUNCTIONS
+    // ===============================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(data) {
+      return isSignedIn() && data.ownerUid == request.auth.uid;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "manojeetdasdas@gmail.com" && isEmailVerified()
+      );
+    }
+
+    // ===============================================================
+    // VALIDATION BLUEPRINTS
+    // ===============================================================
+
+    function isValidBusiness(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.ownerUid == request.auth.uid;
+    }
+
+    function isValidProduct(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.price is number && data.price >= 0 &&
+             data.stockLevel is number &&
+             data.ownerUid == request.auth.uid;
+    }
+
+    function isValidCustomer(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.ownerUid == request.auth.uid;
+    }
+
+    function isValidInvoice(data) {
+      return data.invoiceNumber is string &&
+             data.total is number && data.total >= 0 &&
+             data.status in ['paid', 'pending', 'cancelled'] &&
+             data.ownerUid == request.auth.uid;
+    }
+
+    function isValidVendor(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.ownerUid == request.auth.uid;
+    }
+
+    function isValidVendorQuote(data) {
+      return data.vendorId is string &&
+             data.productId is string &&
+             data.price is number && data.price >= 0 &&
+             data.ownerUid == request.auth.uid;
+    }
+
+    function isValidDocument(data) {
+      return data.name is string && data.name.size() > 0 &&
+             data.ownerUid == request.auth.uid;
+    }
+
+    // ===============================================================
+    // MATCH BLOCKS
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+    }
+
+    match /businesses/{businessId} {
+      allow read, list: if isOwner(existing()) || isAdmin();
+      allow create: if isSignedIn() && isValidBusiness(incoming());
+      allow update: if (isOwner(existing()) && isValidBusiness(incoming())) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read, list: if isOwner(existing()) || isAdmin();
+      allow create: if isSignedIn() && isValidProduct(incoming());
+      allow update: if (isOwner(existing()) && isValidProduct(incoming())) || isAdmin();
+      allow delete: if isOwner(existing()) || isAdmin();
+    }
+
+    match /customers/{customerId} {
+      allow read, list: if isOwner(existing()) || isAdmin();
+      allow create: if isSignedIn() && isValidCustomer(incoming());
+      allow update: if (isOwner(existing()) && isValidCustomer(incoming())) || isAdmin();
+      allow delete: if isOwner(existing()) || isAdmin();
+    }
+
+    match /invoices/{invoiceId} {
+      allow read, list: if isOwner(existing()) || isAdmin();
+      allow create: if isSignedIn() && isValidInvoice(incoming());
+      allow update: if (isOwner(existing()) && isValidInvoice(incoming())) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /vendors/{vendorId} {
+      allow read, list: if isOwner(existing()) || isAdmin();
+      allow create: if isSignedIn() && isValidVendor(incoming());
+      allow update: if (isOwner(existing()) && isValidVendor(incoming())) || isAdmin();
+      allow delete: if isOwner(existing()) || isAdmin();
+    }
+
+    match /vendorQuotes/{quoteId} {
+      allow read, list: if isOwner(existing()) || isAdmin();
+      allow create: if isSignedIn() && isValidVendorQuote(incoming());
+      allow update: if (isOwner(existing()) && isValidVendorQuote(incoming())) || isAdmin();
+      allow delete: if isOwner(existing()) || isAdmin();
+    }
+
+    match /documents/{documentId} {
+      allow read, list: if isOwner(existing()) || isAdmin();
+      allow create: if isSignedIn() && isValidDocument(incoming());
+      allow update: if (isOwner(existing()) && isValidDocument(incoming())) || isAdmin();
+      allow delete: if isOwner(existing()) || isAdmin();
+    }
+  }
+}

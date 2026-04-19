@@ -1,0 +1,6 @@
+{
+  "name": "RetailFlow AI",
+  "description": "Next-gen retail management with multimodal AI assistant, voice-activated commands, and professional reporting (PDF/Excel).",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": []
+}

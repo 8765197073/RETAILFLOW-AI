@@ -1,0 +1,155 @@
+{
+  "entities": {
+    "Business": {
+      "title": "Business",
+      "description": "Represents a retail business profile.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Business name" },
+        "gstNumber": { "type": "string", "description": "GST Identification Number" },
+        "address": { "type": "string", "description": "Physical address" },
+        "phone": { "type": "string", "description": "Contact phone number" },
+        "email": { "type": "string", "description": "Contact email" },
+        "ownerUid": { "type": "string", "description": "UID of the business owner" }
+      },
+      "required": ["name", "ownerUid"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Represents an inventory item.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Product name" },
+        "sku": { "type": "string", "description": "Stock Keeping Unit" },
+        "category": { "type": "string", "description": "Product category" },
+        "price": { "type": "number", "description": "Selling price" },
+        "cost": { "type": "number", "description": "Cost price" },
+        "stockLevel": { "type": "number", "description": "Current stock quantity" },
+        "reorderLevel": { "type": "number", "description": "Stock level to trigger reorder alert" },
+        "businessId": { "type": "string", "description": "ID of the business this product belongs to" }
+      },
+      "required": ["name", "price", "stockLevel", "businessId"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Represents a retail customer.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Customer name" },
+        "email": { "type": "string", "description": "Customer email" },
+        "phone": { "type": "string", "description": "Customer phone number" },
+        "address": { "type": "string", "description": "Customer address" },
+        "businessId": { "type": "string", "description": "ID of the business this customer belongs to" },
+        "totalSpent": { "type": "number", "description": "Total amount spent by the customer" }
+      },
+      "required": ["name", "businessId"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "Represents a sales transaction.",
+      "type": "object",
+      "properties": {
+        "invoiceNumber": { "type": "string", "description": "Unique invoice identifier" },
+        "date": { "type": "string", "format": "date-time", "description": "Transaction date" },
+        "customerId": { "type": "string", "description": "ID of the customer" },
+        "businessId": { "type": "string", "description": "ID of the business" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productId": { "type": "string" },
+              "productName": { "type": "string" },
+              "quantity": { "type": "number" },
+              "price": { "type": "number" }
+            }
+          }
+        },
+        "subtotal": { "type": "number" },
+        "tax": { "type": "number" },
+        "total": { "type": "number" },
+        "status": { "type": "string", "enum": ["paid", "pending", "cancelled"] }
+      },
+      "required": ["invoiceNumber", "date", "businessId", "total", "status"]
+    },
+    "Document": {
+      "title": "Document",
+      "description": "Represents a business document.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "size": { "type": "string" },
+        "date": { "type": "string" },
+        "ownerUid": { "type": "string" },
+        "url": { "type": "string" }
+      },
+      "required": ["name", "ownerUid", "date"]
+    },
+    "Vendor": {
+      "title": "Vendor",
+      "description": "Represents a supplier or vendor.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "contactPerson": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "category": { "type": "string" },
+        "rating": { "type": "number" },
+        "ownerUid": { "type": "string" },
+        "businessId": { "type": "string" },
+        "performanceScore": { "type": "number" }
+      },
+      "required": ["name", "ownerUid", "businessId"]
+    },
+    "VendorQuote": {
+      "title": "VendorQuote",
+      "description": "Represents a price quote from a vendor for a product.",
+      "type": "object",
+      "properties": {
+        "vendorId": { "type": "string" },
+        "productId": { "type": "string" },
+        "price": { "type": "number" },
+        "minOrderQuantity": { "type": "number" },
+        "deliveryTimeDays": { "type": "number" },
+        "validUntil": { "type": "string" },
+        "date": { "type": "string" },
+        "ownerUid": { "type": "string" },
+        "businessId": { "type": "string" }
+      },
+      "required": ["vendorId", "productId", "price", "ownerUid", "businessId"]
+    }
+  },
+  "firestore": {
+    "/businesses/{businessId}": {
+      "schema": "Business",
+      "description": "Collection of businesses."
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Collection of products."
+    },
+    "/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Collection of customers."
+    },
+    "/invoices/{invoiceId}": {
+      "schema": "Invoice",
+      "description": "Collection of invoices."
+    },
+    "/documents/{documentId}": {
+      "schema": "Document",
+      "description": "Collection of documents."
+    },
+    "/vendors/{vendorId}": {
+      "schema": "Vendor",
+      "description": "Collection of vendors."
+    },
+    "/vendorQuotes/{quoteId}": {
+      "schema": "VendorQuote",
+      "description": "Collection of vendor quotes."
+    }
+  }
+}
